@@ -1,11 +1,27 @@
 package libs
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+type HTTPMethod string
+
+const (
+	GET     HTTPMethod = "GET"
+	POST    HTTPMethod = "POST"
+	PUT     HTTPMethod = "PUT"
+	DELETE  HTTPMethod = "DELETE"
+	PATCH   HTTPMethod = "PATCH"
+	OPTIONS HTTPMethod = "OPTIONS"
+	HEAD    HTTPMethod = "HEAD"
+)
 
 type Route struct {
-	Method  string
+	Method  HTTPMethod
 	Path    string
-	Handler gin.HandlerFunc
+	Handler func(*gin.Context) interface{}
 }
 
 type CtrlController struct {
@@ -24,10 +40,44 @@ func RegisterController(r *gin.Engine, controller *CtrlController) {
 	for _, route := range controller.Routes {
 		fullPath := controller.Prefix + route.Path
 		switch route.Method {
-		case "GET":
-			r.GET(fullPath, route.Handler)
-		case "POST":
-			r.POST(fullPath, route.Handler)
+		case GET:
+			r.GET(fullPath, func(c *gin.Context) {
+				result := route.Handler(c)
+				c.JSON(http.StatusOK, result)
+			})
+		case POST:
+			r.POST(fullPath, func(c *gin.Context) {
+				result := route.Handler(c)
+				c.JSON(http.StatusOK, result)
+			})
+		case PUT:
+			r.PUT(fullPath, func(c *gin.Context) {
+				result := route.Handler(c)
+				c.JSON(http.StatusOK, result)
+			})
+		case DELETE:
+			r.DELETE(fullPath, func(c *gin.Context) {
+				result := route.Handler(c)
+				c.JSON(http.StatusOK, result)
+			})
+		case PATCH:
+			r.PATCH(fullPath, func(c *gin.Context) {
+				result := route.Handler(c)
+				c.JSON(http.StatusOK, result)
+			})
+		case OPTIONS:
+			r.OPTIONS(fullPath, func(c *gin.Context) {
+				result := route.Handler(c)
+				c.JSON(http.StatusOK, result)
+			})
+		case HEAD:
+			r.HEAD(fullPath, func(c *gin.Context) {
+				result := route.Handler(c)
+				c.JSON(http.StatusOK, result)
+			})
+		default:
+			panic("Unsupported HTTP method: " + string(route.Method))
+
 		}
 	}
 }

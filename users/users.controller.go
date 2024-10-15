@@ -2,28 +2,31 @@ package users
 
 import (
 	"gomodule/libs"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func UserController() *libs.CtrlController {
 	userController := libs.Controller("/users", []libs.Route{
-		{Method: "GET", Path: "/", Handler: getUsers},
-		{Method: "POST", Path: "/", Handler: createUser},
+		{Method: libs.GET, Path: "/", Handler: getUsers},
+		{Method: libs.GET, Path: "/:id", Handler: getUser},
+		{Method: libs.POST, Path: "/", Handler: createUser},
 	})
 
 	return userController
 }
 
-func getUsers(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Get Users 4",
-	})
+func getUser(c *gin.Context) interface{} {
+	id := c.Param("id")
+	return "Get User " + id
 }
 
-func createUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Create User",
-	})
+func getUsers(c *gin.Context) interface{} {
+	return map[string]interface{}{
+		"data": 1,
+	}
+}
+
+func createUser(c *gin.Context) interface{} {
+	return "Create User"
 }
