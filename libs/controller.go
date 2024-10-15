@@ -8,19 +8,19 @@ type Route struct {
 	Handler gin.HandlerFunc
 }
 
-type Controller struct {
+type CtrlController struct {
 	Prefix string
 	Routes []Route
 }
 
-func NewController(prefix string, routes []Route) *Controller {
-	return &Controller{
+func Controller(prefix string, routes []Route) *CtrlController {
+	return &CtrlController{
 		Prefix: prefix,
 		Routes: routes,
 	}
 }
 
-func RegisterController(r *gin.Engine, controller *Controller) {
+func RegisterController(r *gin.Engine, controller *CtrlController) {
 	for _, route := range controller.Routes {
 		fullPath := controller.Prefix + route.Path
 		switch route.Method {

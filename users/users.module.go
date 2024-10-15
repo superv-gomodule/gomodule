@@ -1,12 +1,9 @@
 package users
 
-func UserModule() *Module {
-	// Define routes for UserController
-	userController := NewController("/users", []Route{
-		{Method: "GET", Path: "/", Handler: getUsers},
-		{Method: "POST", Path: "/", Handler: createUser},
-	})
+import (
+	"gomodule/libs"
+)
 
-	// Create a module with UserController
-	return NewModule([]*Controller{userController})
+func UserModule() *libs.CtrlModule {
+	return libs.Module([]*libs.CtrlController{UserController()}, nil, nil)
 }
