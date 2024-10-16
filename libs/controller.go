@@ -19,10 +19,14 @@ const (
 	HEAD    HTTPMethod = "HEAD"
 )
 
+type Context struct {
+	*gin.Context
+}
+
 type Route struct {
 	Method      HTTPMethod
 	Path        string
-	Handler     func(*gin.Context) interface{}
+	Handler     func(*Context) interface{}
 	Summary     string
 	Description string
 	Tags        []string
@@ -42,6 +46,10 @@ func Controller(prefix string, routes []Route) *CtrlController {
 		Prefix: prefix,
 		Routes: routes,
 	}
+}
+
+func WrapGinContext(c *gin.Context) *Context {
+	return &Context{Context: c}
 }
 
 func RegisterController(r *gin.Engine, controller *CtrlController) {
@@ -70,37 +78,44 @@ func RegisterController(r *gin.Engine, controller *CtrlController) {
 		switch route.Method {
 		case GET:
 			r.GET(fullPath, func(c *gin.Context) {
-				result := route.Handler(c)
+				ctx := WrapGinContext(c)
+				result := route.Handler(ctx)
 				c.JSON(http.StatusOK, result)
 			})
 		case POST:
 			r.POST(fullPath, func(c *gin.Context) {
-				result := route.Handler(c)
+				ctx := WrapGinContext(c)
+				result := route.Handler(ctx)
 				c.JSON(http.StatusOK, result)
 			})
 		case PUT:
 			r.PUT(fullPath, func(c *gin.Context) {
-				result := route.Handler(c)
+				ctx := WrapGinContext(c)
+				result := route.Handler(ctx)
 				c.JSON(http.StatusOK, result)
 			})
 		case DELETE:
 			r.DELETE(fullPath, func(c *gin.Context) {
-				result := route.Handler(c)
+				ctx := WrapGinContext(c)
+				result := route.Handler(ctx)
 				c.JSON(http.StatusOK, result)
 			})
 		case PATCH:
 			r.PATCH(fullPath, func(c *gin.Context) {
-				result := route.Handler(c)
+				ctx := WrapGinContext(c)
+				result := route.Handler(ctx)
 				c.JSON(http.StatusOK, result)
 			})
 		case OPTIONS:
 			r.OPTIONS(fullPath, func(c *gin.Context) {
-				result := route.Handler(c)
+				ctx := WrapGinContext(c)
+				result := route.Handler(ctx)
 				c.JSON(http.StatusOK, result)
 			})
 		case HEAD:
 			r.HEAD(fullPath, func(c *gin.Context) {
-				result := route.Handler(c)
+				ctx := WrapGinContext(c)
+				result := route.Handler(ctx)
 				c.JSON(http.StatusOK, result)
 			})
 		default:

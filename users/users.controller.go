@@ -2,8 +2,6 @@ package users
 
 import (
 	"gomodule/libs"
-
-	"github.com/gin-gonic/gin"
 )
 
 type User struct {
@@ -49,7 +47,7 @@ func UserController() *libs.CtrlController {
 // @Param id path string true "User ID"
 // @Success 200 {string} string "Get User {id}"
 // @Router /users/{id} [get]
-func getUser(c *gin.Context) interface{} {
+func getUser(c *libs.Context) interface{} {
 	id := c.Param("id")
 	return "Get User " + id
 }
@@ -60,7 +58,7 @@ func getUser(c *gin.Context) interface{} {
 // @Tags users
 // @Success 200 {object} map[string]interface{}
 // @Router /users/ [get]
-func getUsers(c *gin.Context) interface{} {
+func getUsers(c *libs.Context) interface{} {
 	return map[string]interface{}{
 		"data": 1,
 	}
@@ -72,6 +70,6 @@ func getUsers(c *gin.Context) interface{} {
 // @Tags users
 // @Success 200 {string} string "Create User"
 // @Router /users/ [post]
-func createUser(c *gin.Context) interface{} {
+func createUser(c *libs.Context) interface{} {
 	return "Create User"
 }
