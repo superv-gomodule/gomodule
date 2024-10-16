@@ -1,13 +1,8 @@
 package main
 
 import (
-	"fmt"
-
-	"gomodule/libs"
-
-	"github.com/gin-gonic/gin"
-
 	_ "gomodule/docs"
+	"gomodule/libs"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -25,16 +20,9 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
-	// Create a gin router
-	r := gin.Default()
+	app := libs.Create(AppModule())
 
-	// Register the user module
-	libs.RegisterModule(r, AppModule())
+	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	// Start the gin server
-	if err := r.Run(":8080"); err != nil {
-		fmt.Println("Failed to start server:", err)
-	}
+	app.Listen(8080)
 }

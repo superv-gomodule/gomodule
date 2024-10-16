@@ -6,11 +6,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type User struct {
+	Name  string `json:"name" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
+}
+
 func UserController() *libs.CtrlController {
 	userController := libs.Controller("/users", []libs.Route{
-		{Method: libs.GET, Path: "/", Handler: getUsers},
-		{Method: libs.GET, Path: "/:id", Handler: getUser},
-		{Method: libs.POST, Path: "/", Handler: createUser},
+		{
+			Method:      libs.GET,
+			Path:        "/",
+			Handler:     getUsers,
+			Summary:     "Get all users",
+			Description: "Get a list of users",
+			Tags:        []string{"users"},
+		},
+		{
+			Method:      libs.GET,
+			Path:        "/:id",
+			Handler:     getUser,
+			Summary:     "Get user by ID",
+			Description: "Get user details",
+			Tags:        []string{"users"},
+		},
+		{
+			Method:      libs.POST,
+			Path:        "/",
+			Handler:     createUser,
+			Summary:     "Create a new user",
+			Description: "Create a new user",
+			Tags:        []string{"users"},
+		},
 	})
 
 	return userController
