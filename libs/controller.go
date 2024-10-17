@@ -28,6 +28,7 @@ type Route struct {
 	Path        string
 	Handler     func(*Context) interface{}
 	Body        interface{}
+	Query       interface{}
 	Summary     string
 	Description string
 	Tags        []string
@@ -66,22 +67,23 @@ func RegisterController(r *gin.Engine, controller *Controller) {
 		handler := createGenericHandler(route.Handler)
 
 		var body interface{} = route.Body
+		var query interface{} = route.Query
 
 		switch route.Method {
 		case GET:
-			r.GET(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
+			r.GET(fullPath, DynamicBindingMiddleware(body, query), GlobalPipes(), handler)
 		case POST:
-			r.POST(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
+			r.POST(fullPath, DynamicBindingMiddleware(body, query), GlobalPipes(), handler)
 		case PUT:
-			r.PUT(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
+			r.PUT(fullPath, DynamicBindingMiddleware(body, query), GlobalPipes(), handler)
 		case DELETE:
-			r.DELETE(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
+			r.DELETE(fullPath, DynamicBindingMiddleware(body, query), GlobalPipes(), handler)
 		case PATCH:
-			r.PATCH(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
+			r.PATCH(fullPath, DynamicBindingMiddleware(body, query), GlobalPipes(), handler)
 		case OPTIONS:
-			r.OPTIONS(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
+			r.OPTIONS(fullPath, DynamicBindingMiddleware(body, query), GlobalPipes(), handler)
 		case HEAD:
-			r.HEAD(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
+			r.HEAD(fullPath, DynamicBindingMiddleware(body, query), GlobalPipes(), handler)
 		default:
 			panic("Unsupported HTTP method: " + string(route.Method))
 		}

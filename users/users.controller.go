@@ -5,8 +5,13 @@ import (
 )
 
 type User struct {
-	Name  string `json:"name" validate:"required"`
+	Name  string `json:"name"`
 	Email string `json:"email" validate:"required,email"`
+}
+
+type UserParams struct {
+	Name string `form:"name" binding:"required"`
+	Age  int    `form:"age" binding:"required,min=1"`
 }
 
 func UserController() *libs.Controller {
@@ -15,6 +20,7 @@ func UserController() *libs.Controller {
 			Method:      libs.GET,
 			Path:        "/",
 			Handler:     getUsers,
+			Query:       UserParams{},
 			Summary:     "Get all users",
 			Description: "Get a list of users",
 			Tags:        []string{"users"},
@@ -60,8 +66,11 @@ func getUser(c *libs.Context) interface{} {
 // @Success 200 {object} map[string]interface{}
 // @Router /users/ [get]
 func getUsers(c *libs.Context) interface{} {
+	var params UserParams
+	libs.Query(c, &params)
 	return map[string]interface{}{
-		"data": 1,
+		"message": "User created",
+		"user":    params,
 	}
 }
 
