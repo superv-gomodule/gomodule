@@ -23,7 +23,7 @@ import (
 func main() {
 	app := libs.Create(AppModule())
 
-	app.UseGlobalValidator(validator.New().Struct)
+	app.UseGlobalPipes(validator.New().Struct)
 
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

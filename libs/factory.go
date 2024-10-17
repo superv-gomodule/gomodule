@@ -29,14 +29,6 @@ func (c *CustomEngine) Listen(port int) {
 	}
 }
 
-type ValidatorFunc func(obj interface{}) error
-
-var globalValidator ValidatorFunc
-
-func (c *CustomEngine) UseGlobalValidator(v ValidatorFunc) {
-	globalValidator = v
-}
-
 func DynamicBindingMiddleware(obj interface{}) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if obj == nil {
@@ -65,32 +57,6 @@ func DynamicBindingMiddleware(obj interface{}) gin.HandlerFunc {
 	}
 }
 
-func GlobalValidationMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		boundObject, exists := c.Get("boundObject")
-		if !exists {
-			c.JSON(400, gin.H{
-				"error": "No object found for validation",
-			})
-			c.Abort()
-			return
-		}
-
-		if globalValidator != nil {
-			if err := globalValidator(boundObject); err != nil {
-				c.JSON(400, gin.H{
-					"error":  "Validation failed",
-					"detail": err.Error(),
-				})
-				c.Abort()
-				return
-			}
-		}
-
-		c.Next()
-	}
-}
-
 func Body(c *Context, obj interface{}) error {
 	boundObject, exists := c.Get("boundObject")
 	if !exists {
@@ -109,4 +75,32 @@ func Body(c *Context, obj interface{}) error {
 	reflect.ValueOf(obj).Elem().Set(boundValue.Elem())
 
 	return nil
+}
+
+type PipeFunc func(obj interface{}) error
+
+func (c *CustomEngine) UseGlobalPipes(pipes ...PipeFunc) {
+	globalPipes = append(globalPipes, pipes...)
+}
+
+func GlobalPipes() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		boundObject, exists := c.Get("boundObject")
+		if !exists {
+			return
+		}
+
+		for _, pipe := range globalPipes {
+			if err := pipe(boundObject); err != nil {
+				c.JSON(400, gin.H{
+					"error":  "Processing failed",
+					"detail": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+		}
+
+		c.Next()
+	}
 }

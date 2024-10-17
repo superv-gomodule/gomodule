@@ -69,19 +69,19 @@ func RegisterController(r *gin.Engine, controller *Controller) {
 
 		switch route.Method {
 		case GET:
-			r.GET(fullPath, DynamicBindingMiddleware(body), handler)
+			r.GET(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
 		case POST:
-			r.POST(fullPath, DynamicBindingMiddleware(body), GlobalValidationMiddleware(), handler)
+			r.POST(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
 		case PUT:
-			r.PUT(fullPath, DynamicBindingMiddleware(body), handler)
+			r.PUT(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
 		case DELETE:
-			r.DELETE(fullPath, DynamicBindingMiddleware(body), handler)
+			r.DELETE(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
 		case PATCH:
-			r.PATCH(fullPath, DynamicBindingMiddleware(body), handler)
+			r.PATCH(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
 		case OPTIONS:
-			r.OPTIONS(fullPath, DynamicBindingMiddleware(body), handler)
+			r.OPTIONS(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
 		case HEAD:
-			r.HEAD(fullPath, DynamicBindingMiddleware(body), handler)
+			r.HEAD(fullPath, DynamicBindingMiddleware(body), GlobalPipes(), handler)
 		default:
 			panic("Unsupported HTTP method: " + string(route.Method))
 		}
