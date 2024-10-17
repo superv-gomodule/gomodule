@@ -4,6 +4,10 @@ import (
 	"gomodule/libs"
 )
 
-func UserModule() *libs.CtrlModule {
-	return libs.Module([]*libs.CtrlController{UserController()}, nil, nil)
+func UserModule() *libs.Module {
+	return libs.NewModule(
+		[]*libs.Controller{UserController()},
+		nil,
+		nil,
+	)
 }

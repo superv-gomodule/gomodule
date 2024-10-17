@@ -4,6 +4,7 @@ import (
 	_ "gomodule/docs"
 	"gomodule/libs"
 
+	"github.com/go-playground/validator"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -21,6 +22,8 @@ import (
 // @BasePath /
 func main() {
 	app := libs.Create(AppModule())
+
+	app.UseGlobalValidator(validator.New().Struct)
 
 	app.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

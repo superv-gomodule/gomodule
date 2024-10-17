@@ -27,12 +27,13 @@ type Route struct {
 	Method      HTTPMethod
 	Path        string
 	Handler     func(*Context) interface{}
+	Body        interface{}
 	Summary     string
 	Description string
 	Tags        []string
 }
 
-type CtrlController struct {
+type Controller struct {
 	Prefix string
 	Routes []Route
 }
@@ -41,8 +42,8 @@ type Param struct {
 	Name string
 }
 
-func Controller(prefix string, routes []Route) *CtrlController {
-	return &CtrlController{
+func NewController(prefix string, routes []Route) *Controller {
+	return &Controller{
 		Prefix: prefix,
 		Routes: routes,
 	}
@@ -52,7 +53,7 @@ func WrapGinContext(c *gin.Context) *Context {
 	return &Context{Context: c}
 }
 
-func RegisterController(r *gin.Engine, controller *CtrlController) {
+func RegisterController(r *gin.Engine, controller *Controller) {
 	file, err := os.OpenFile("docs/docs.go", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
@@ -61,65 +62,36 @@ func RegisterController(r *gin.Engine, controller *CtrlController) {
 
 	for _, route := range controller.Routes {
 		fullPath := controller.Prefix + route.Path
-		// swaggerDoc := fmt.Sprintf(`
-		// 	// @Summary %s
-		// 	// @Description %s
-		// 	// @Tags %s
-		// 	// @Router %s [%s]`,
-		// 	route.Summary, route.Description,
-		// 	strings.Join(route.Tags, ","),
-		// 	fullPath,
-		// 	route.Method)
 
-		// if _, err := file.WriteString(swaggerDoc + "\n"); err != nil {
-		// 	panic(err)
-		// }
+		handler := createGenericHandler(route.Handler)
+
+		var body interface{} = route.Body
 
 		switch route.Method {
 		case GET:
-			r.GET(fullPath, func(c *gin.Context) {
-				ctx := WrapGinContext(c)
-				result := route.Handler(ctx)
-				c.JSON(http.StatusOK, result)
-			})
+			r.GET(fullPath, DynamicBindingMiddleware(body), handler)
 		case POST:
-			r.POST(fullPath, func(c *gin.Context) {
-				ctx := WrapGinContext(c)
-				result := route.Handler(ctx)
-				c.JSON(http.StatusOK, result)
-			})
+			r.POST(fullPath, DynamicBindingMiddleware(body), GlobalValidationMiddleware(), handler)
 		case PUT:
-			r.PUT(fullPath, func(c *gin.Context) {
-				ctx := WrapGinContext(c)
-				result := route.Handler(ctx)
-				c.JSON(http.StatusOK, result)
-			})
+			r.PUT(fullPath, DynamicBindingMiddleware(body), handler)
 		case DELETE:
-			r.DELETE(fullPath, func(c *gin.Context) {
-				ctx := WrapGinContext(c)
-				result := route.Handler(ctx)
-				c.JSON(http.StatusOK, result)
-			})
+			r.DELETE(fullPath, DynamicBindingMiddleware(body), handler)
 		case PATCH:
-			r.PATCH(fullPath, func(c *gin.Context) {
-				ctx := WrapGinContext(c)
-				result := route.Handler(ctx)
-				c.JSON(http.StatusOK, result)
-			})
+			r.PATCH(fullPath, DynamicBindingMiddleware(body), handler)
 		case OPTIONS:
-			r.OPTIONS(fullPath, func(c *gin.Context) {
-				ctx := WrapGinContext(c)
-				result := route.Handler(ctx)
-				c.JSON(http.StatusOK, result)
-			})
+			r.OPTIONS(fullPath, DynamicBindingMiddleware(body), handler)
 		case HEAD:
-			r.HEAD(fullPath, func(c *gin.Context) {
-				ctx := WrapGinContext(c)
-				result := route.Handler(ctx)
-				c.JSON(http.StatusOK, result)
-			})
+			r.HEAD(fullPath, DynamicBindingMiddleware(body), handler)
 		default:
 			panic("Unsupported HTTP method: " + string(route.Method))
 		}
+	}
+}
+
+func createGenericHandler(handler func(*Context) interface{}) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := WrapGinContext(c)
+		result := handler(ctx)
+		c.JSON(http.StatusOK, result)
 	}
 }

@@ -9,8 +9,8 @@ type User struct {
 	Email string `json:"email" validate:"required,email"`
 }
 
-func UserController() *libs.CtrlController {
-	userController := libs.Controller("/users", []libs.Route{
+func UserController() *libs.Controller {
+	userController := libs.NewController("/users", []libs.Route{
 		{
 			Method:      libs.GET,
 			Path:        "/",
@@ -31,6 +31,7 @@ func UserController() *libs.CtrlController {
 			Method:      libs.POST,
 			Path:        "/",
 			Handler:     createUser,
+			Body:        User{},
 			Summary:     "Create a new user",
 			Description: "Create a new user",
 			Tags:        []string{"users"},
@@ -70,6 +71,14 @@ func getUsers(c *libs.Context) interface{} {
 // @Tags users
 // @Success 200 {string} string "Create User"
 // @Router /users/ [post]
+// @Param name body string true "Name"
+// @Param email body string true "Email"
 func createUser(c *libs.Context) interface{} {
-	return "Create User"
+	var user User
+	libs.Body(c, &user)
+
+	return map[string]interface{}{
+		"message": "User created",
+		"user":    user,
+	}
 }

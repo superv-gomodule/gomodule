@@ -27,6 +27,19 @@ paths:
       - users
     post:
       description: Create a new user
+      parameters:
+      - description: Name
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Email
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
       responses:
         "200":
           description: Create User

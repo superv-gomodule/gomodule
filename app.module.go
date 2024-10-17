@@ -5,6 +5,10 @@ import (
 	"gomodule/users"
 )
 
-func AppModule() *libs.CtrlModule {
-	return libs.Module(nil, nil, []*libs.CtrlModule{users.UserModule()})
+func AppModule() *libs.Module {
+	return libs.NewModule(
+		nil,
+		nil,
+		[]*libs.Module{users.UserModule()},
+	)
 }

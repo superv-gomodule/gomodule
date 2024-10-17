@@ -2,21 +2,21 @@ package libs
 
 import "github.com/gin-gonic/gin"
 
-type CtrlModule struct {
-	Controllers []*CtrlController
+type Module struct {
+	Controllers []*Controller
 	Providers   []interface{}
-	Imports     []*CtrlModule
+	Imports     []*Module
 }
 
-func Module(controllers []*CtrlController, providers []interface{}, imports []*CtrlModule) *CtrlModule {
-	return &CtrlModule{
+func NewModule(controllers []*Controller, providers []interface{}, imports []*Module) *Module {
+	return &Module{
 		Controllers: controllers,
 		Providers:   providers,
 		Imports:     imports,
 	}
 }
 
-func RegisterModule(r *gin.Engine, module *CtrlModule) {
+func RegisterModule(r *gin.Engine, module *Module) {
 	for _, controller := range module.Controllers {
 		RegisterController(r, controller)
 	}
