@@ -14,32 +14,38 @@ type UserParams struct {
 	Age  int    `form:"age" binding:"required,min=1"`
 }
 
-func UserController() *libs.Controller {
-	userController := libs.NewController("/users")
+type UserController struct {
+	service UserService
+}
 
-	userController.GET(libs.Route{
+func NewUserController(module *libs.Module) *libs.Controller {
+	userController := &UserController{}
+	module.Inject(&userController.service)
+
+	controller := libs.NewController("/users")
+	controller.GET(libs.Route{
 		Path:        "/",
-		Handler:     getUsers,
+		Handler:     userController.getUsers,
 		Summary:     "Get user information",
 		Description: "Retrieve user details based on the provided user ID.",
 		Tags:        []string{"Users"},
 	})
 
-	userController.GET(libs.Route{
+	controller.GET(libs.Route{
 		Path:    "/:id",
-		Handler: getUser,
+		Handler: userController.getUser,
 		Summary: "Get user by ID",
 		Tags:    []string{"Users"},
 	})
 
-	userController.POST(libs.Route{
+	controller.POST(libs.Route{
 		Path:    "/",
-		Handler: createUser,
+		Handler: userController.createUser,
 		Summary: "Create a new user",
 		Tags:    []string{"Users"},
 	})
 
-	return userController
+	return controller
 }
 
 // UserController godoc
@@ -49,9 +55,9 @@ func UserController() *libs.Controller {
 // @Param id path string true "User ID"
 // @Success 200 {string} string "Get User {id}"
 // @Router /users/{id} [get]
-func getUser(c *libs.Context) interface{} {
-	id := c.Param("id")
-	return "Get User " + id
+func (uc *UserController) getUser(c *libs.Context) interface{} {
+	return uc.service.FindAll()
+
 }
 
 // getUsers godoc
@@ -60,7 +66,7 @@ func getUser(c *libs.Context) interface{} {
 // @Tags users
 // @Success 200 {object} map[string]interface{}
 // @Router /users/ [get]
-func getUsers(c *libs.Context) interface{} {
+func (uc *UserController) getUsers(c *libs.Context) interface{} {
 	var params UserParams
 	libs.Query(c, &params)
 	return map[string]interface{}{
@@ -77,7 +83,7 @@ func getUsers(c *libs.Context) interface{} {
 // @Router /users/ [post]
 // @Param name body string true "Name"
 // @Param email body string true "Email"
-func createUser(c *libs.Context) interface{} {
+func (uc *UserController) createUser(c *libs.Context) interface{} {
 	var user User
 	libs.Body(c, &user)
 

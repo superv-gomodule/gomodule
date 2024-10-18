@@ -40,7 +40,8 @@ type Param struct {
 
 type Controller struct {
 	Prefix string
-	Routes []Route
+
+	routes []Route
 }
 
 func NewController(prefix string) *Controller {
@@ -60,7 +61,7 @@ func RegisterController(r *gin.Engine, controller *Controller) {
 	}
 	defer file.Close()
 
-	for _, route := range controller.Routes {
+	for _, route := range controller.routes {
 		fullPath := controller.Prefix + route.Path
 
 		handler := createGenericHandler(route.Handler)

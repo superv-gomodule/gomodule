@@ -1,12 +1,16 @@
 package users
 
-type UserService struct {
+type UserService interface {
+	FindAll() []string
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+type userServiceImpl struct {
 }
 
-func (s *UserService) FindAll() []string {
+func NewUserService() UserService {
+	return &userServiceImpl{}
+}
+
+func (s *userServiceImpl) FindAll() []string {
 	return []string{"user1", "user2"}
 }

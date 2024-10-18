@@ -6,8 +6,10 @@ import (
 
 func UserModule() *libs.Module {
 	module := libs.NewModule()
+	userService := NewUserService()
 
-	module.AddController(UserController())
+	module.Providers(userService)
+	module.Controllers(NewUserController(module))
 
 	return module
 }

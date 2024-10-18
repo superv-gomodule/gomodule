@@ -8,7 +8,7 @@ import (
 func AppModule() *libs.Module {
 	module := libs.NewModule()
 
-	module.AddModule(users.UserModule())
+	module.Imports(users.UserModule())
 
 	return module
 }
