@@ -8,11 +8,11 @@ type Module struct {
 	Imports     []*Module
 }
 
-func NewModule(controllers []*Controller, providers []interface{}, imports []*Module) *Module {
+func NewModule() *Module {
 	return &Module{
-		Controllers: controllers,
-		Providers:   providers,
-		Imports:     imports,
+		Controllers: []*Controller{},
+		Providers:   []interface{}{},
+		Imports:     []*Module{},
 	}
 }
 
@@ -24,4 +24,12 @@ func RegisterModule(r *gin.Engine, module *Module) {
 	for _, importedModule := range module.Imports {
 		RegisterModule(r, importedModule)
 	}
+}
+
+func (m *Module) AddController(controller ...*Controller) {
+	m.Controllers = append(m.Controllers, controller...)
+}
+
+func (m *Module) AddModule(importedModule ...*Module) {
+	m.Imports = append(m.Imports, importedModule...)
 }

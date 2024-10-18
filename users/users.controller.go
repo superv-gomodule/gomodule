@@ -15,33 +15,28 @@ type UserParams struct {
 }
 
 func UserController() *libs.Controller {
-	userController := libs.NewController("/users", []libs.Route{
-		{
-			Method:      libs.GET,
-			Path:        "/",
-			Handler:     getUsers,
-			Query:       UserParams{},
-			Summary:     "Get all users",
-			Description: "Get a list of users",
-			Tags:        []string{"users"},
-		},
-		{
-			Method:      libs.GET,
-			Path:        "/:id",
-			Handler:     getUser,
-			Summary:     "Get user by ID",
-			Description: "Get user details",
-			Tags:        []string{"users"},
-		},
-		{
-			Method:      libs.POST,
-			Path:        "/",
-			Handler:     createUser,
-			Body:        User{},
-			Summary:     "Create a new user",
-			Description: "Create a new user",
-			Tags:        []string{"users"},
-		},
+	userController := libs.NewController("/users")
+
+	userController.GET(libs.Route{
+		Path:        "/",
+		Handler:     getUsers,
+		Summary:     "Get user information",
+		Description: "Retrieve user details based on the provided user ID.",
+		Tags:        []string{"Users"},
+	})
+
+	userController.GET(libs.Route{
+		Path:    "/:id",
+		Handler: getUser,
+		Summary: "Get user by ID",
+		Tags:    []string{"Users"},
+	})
+
+	userController.POST(libs.Route{
+		Path:    "/",
+		Handler: createUser,
+		Summary: "Create a new user",
+		Tags:    []string{"Users"},
 	})
 
 	return userController

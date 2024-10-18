@@ -6,9 +6,9 @@ import (
 )
 
 func AppModule() *libs.Module {
-	return libs.NewModule(
-		nil,
-		nil,
-		[]*libs.Module{users.UserModule()},
-	)
+	module := libs.NewModule()
+
+	module.AddModule(users.UserModule())
+
+	return module
 }

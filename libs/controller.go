@@ -34,19 +34,18 @@ type Route struct {
 	Tags        []string
 }
 
+type Param struct {
+	Name string
+}
+
 type Controller struct {
 	Prefix string
 	Routes []Route
 }
 
-type Param struct {
-	Name string
-}
-
-func NewController(prefix string, routes []Route) *Controller {
+func NewController(prefix string) *Controller {
 	return &Controller{
 		Prefix: prefix,
-		Routes: routes,
 	}
 }
 

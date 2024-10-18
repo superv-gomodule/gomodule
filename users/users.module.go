@@ -5,9 +5,9 @@ import (
 )
 
 func UserModule() *libs.Module {
-	return libs.NewModule(
-		[]*libs.Controller{UserController()},
-		nil,
-		nil,
-	)
+	module := libs.NewModule()
+
+	module.AddController(UserController())
+
+	return module
 }
