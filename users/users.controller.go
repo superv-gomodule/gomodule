@@ -15,12 +15,12 @@ type UserParams struct {
 }
 
 type UserController struct {
-	service UserService
+	userService UserService
 }
 
 func NewUserController(module *libs.Module) *libs.Controller {
 	userController := &UserController{}
-	module.Inject(&userController.service)
+	module.Inject(&userController.userService)
 
 	controller := libs.NewController("/users")
 	controller.GET(libs.Route{
@@ -56,7 +56,7 @@ func NewUserController(module *libs.Module) *libs.Controller {
 // @Success 200 {string} string "Get User {id}"
 // @Router /users/{id} [get]
 func (uc *UserController) getUser(c *libs.Context) interface{} {
-	return uc.service.FindAll()
+	return uc.userService.FindAll()
 
 }
 
@@ -69,6 +69,7 @@ func (uc *UserController) getUser(c *libs.Context) interface{} {
 func (uc *UserController) getUsers(c *libs.Context) interface{} {
 	var params UserParams
 	libs.Query(c, &params)
+
 	return map[string]interface{}{
 		"message": "User created",
 		"user":    params,

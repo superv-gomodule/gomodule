@@ -3,9 +3,13 @@ package libs
 import (
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 )
+
+var registeredRoutes = make(map[string]bool)
+var mu sync.Mutex
 
 type HTTPMethod string
 
@@ -63,6 +67,15 @@ func RegisterController(r *gin.Engine, controller *Controller) {
 
 	for _, route := range controller.routes {
 		fullPath := controller.Prefix + route.Path
+
+		mu.Lock()
+		routeKey := string(route.Method) + "-" + fullPath
+		if registeredRoutes[routeKey] {
+			mu.Unlock()
+			continue
+		}
+		registeredRoutes[routeKey] = true
+		mu.Unlock()
 
 		handler := createGenericHandler(route.Handler)
 

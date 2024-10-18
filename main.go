@@ -21,7 +21,7 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
-	app := libs.Create(AppModule())
+	app := libs.New(AppModule())
 
 	app.UseGlobalPipes(validator.New().Struct)
 

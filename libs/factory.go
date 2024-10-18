@@ -11,7 +11,7 @@ type CustomEngine struct {
 	*gin.Engine
 }
 
-func Create(module *Module) *CustomEngine {
+func New(module *Module) *CustomEngine {
 	r := gin.Default()
 
 	RegisterModule(r, module)
